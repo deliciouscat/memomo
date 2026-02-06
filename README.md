@@ -4,7 +4,7 @@
 data 파일은 `/Users/deliciouscat/MemomoData`에서 관리하도록 함.
 
 # 기능
-## 프로젝트 관리.
+## 프로젝트 관리
 
 ```UI Pseudo Code
 VerticalGrid(
@@ -12,7 +12,11 @@ VerticalGrid(
         [
             IconButton(➕, desc: "add new task/memo"),
             IconButton(📝 or 🛞, desc: "switch main sheet to memo sheet/task sheet"),
-            IconButton(🔎, desc: "search content from memo sheet/task sheet")
+            IconButton(🔎, desc: "search content from memo sheet/task sheet"),
+            ActivationCircle(desc: "Green(#29E578) if apps in WorkAppList is Activated. Red(#ED3755) if not")
+            ActivationGauge(desc: "Bar gauge. via 'gauge decrease rate' and 'gauge increase rate'. "),
+            ActivationMaxDuration(desc: "How long was the gauge was max status. h m s notation. ")
+            IconButton(⚙️, desc: "Modal page for setting. Activation: [max gauge(point), increase(point/s), decrease(point/s)]")
         ]
     ),
     TaskSheet
