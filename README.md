@@ -13,10 +13,10 @@ VerticalGrid(
             IconButton(➕, desc: "add new task/memo"),
             IconButton(📝 or 🛞, desc: "switch main sheet to memo sheet/task sheet"),
             IconButton(🔎, desc: "search content from memo sheet/task sheet"),
-            ActivationCircle(desc: "Green(#29E578) if apps in WorkAppList is Activated. Red(#ED3755) if not")
+            ActivationCircle(desc: "Green(#29E578) if apps in WorkAppList is Activated frontmost. Red(#ED3755) if not")
             ActivationGauge(desc: "Bar gauge. via 'gauge decrease rate' and 'gauge increase rate'. "),
             ActivationMaxDuration(desc: "How long was the gauge was max status. h m s notation. ")
-            IconButton(⚙️, desc: "Modal page for setting. Activation: [max gauge(point), increase(point/s), decrease(point/s)]")
+            IconButton(⚙️, desc: "Modal page for setting. Activation: [max gauge(point), increase(point/s), decrease(point/s), WorkAppList]")
         ]
     ),
     TaskSheet
@@ -65,11 +65,11 @@ Props{
 }
 
 def RenderSubtaskDetails{
-    desc: ""
+    desc: "checkbox, name, describtion... etc. editable."
 }
 
 def RenderSubtaskAbstract{
-    desc: "name, duration, checkbox"
+    desc: "checkbox, name, duration"
 }
 ```
 
@@ -77,3 +77,4 @@ def RenderSubtaskAbstract{
 # 개발 스택
 - Swift
 - Swift UI
+- NSWorkspace
