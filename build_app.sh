@@ -39,6 +39,34 @@ if [ -d "Memomo/Resources" ]; then
     cp -r "Memomo/Resources"/* "${RESOURCES_DIR}/" 2>/dev/null || true
 fi
 
+# ===== 앱 아이콘 설정 =====
+
+# 방법 1: .icns 파일 복사 (Finder에서 아이콘 표시용)
+if [ -f "AppIcon.icns" ]; then
+    echo "앱 아이콘(.icns) 복사 중..."
+    cp "AppIcon.icns" "${RESOURCES_DIR}/AppIcon.icns"
+else
+    echo "경고: AppIcon.icns 파일이 없습니다. 'source venv/bin/activate && python3 create_icns.py'를 먼저 실행하세요."
+fi
+
+# 방법 2: actool로 Asset Catalog 컴파일 (.car 파일 생성)
+ASSETS_DIR="Memomo/Resources/Assets.xcassets"
+if [ -d "${ASSETS_DIR}" ]; then
+    echo "Asset Catalog 컴파일 중..."
+    xcrun actool \
+        --compile "${RESOURCES_DIR}" \
+        --platform macosx \
+        --minimum-deployment-target 13.0 \
+        --app-icon AppIcon \
+        --output-partial-info-plist /tmp/memomo-assetcatalog-info.plist \
+        "${ASSETS_DIR}" 2>/dev/null
+    if [ $? -eq 0 ]; then
+        echo "✓ Asset Catalog 컴파일 완료"
+    else
+        echo "경고: Asset Catalog 컴파일 실패 (.icns 파일로 대체)"
+    fi
+fi
+
 # Info.plist 생성
 echo "Info.plist 생성 중..."
 cat > "${CONTENTS_DIR}/Info.plist" << EOF
@@ -64,6 +92,10 @@ cat > "${CONTENTS_DIR}/Info.plist" << EOF
     <string>13.0</string>
     <key>NSHighResolutionCapable</key>
     <true/>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundleIconName</key>
+    <string>AppIcon</string>
     <key>LSApplicationCategoryType</key>
     <string>public.app-category.productivity</string>
     <key>NSPrincipalClass</key>
@@ -98,6 +130,12 @@ if [ -f "${CONTENTS_DIR}/Info.plist" ]; then
 fi
 if [ -d "${RESOURCES_DIR}/Memomo_Memomo.bundle" ]; then
     echo "✓ 리소스 번들 존재"
+fi
+if [ -f "${RESOURCES_DIR}/AppIcon.icns" ]; then
+    echo "✓ AppIcon.icns 존재"
+fi
+if [ -f "${RESOURCES_DIR}/Assets.car" ]; then
+    echo "✓ Assets.car 존재 (컴파일된 Asset Catalog)"
 fi
 
 echo ""
