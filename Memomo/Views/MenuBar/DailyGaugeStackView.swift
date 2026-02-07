@@ -22,6 +22,7 @@ struct DailyGaugeStackView: View {
                 }
                 .frame(width: 14)
                 .contentShape(Rectangle())
+                .help(formatDuration(TimeInterval(stat.totalSeconds)))
                 .onHover { hovering in
                     hoveredDateKey = hovering ? stat.dateKey : nil
                 }
@@ -38,6 +39,7 @@ struct DailyGaugeStackView: View {
                             )
                             .fixedSize()
                             .offset(y: -20)
+                            .allowsHitTesting(false)
                     }
                 }
             }
