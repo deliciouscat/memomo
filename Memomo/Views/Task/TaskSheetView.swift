@@ -8,9 +8,9 @@ struct TaskSheetView: View {
     var body: some View {
         HSplitView {
             taskList
-                .frame(minWidth: 260)
+                .frame(minWidth: 156)
             taskDetail
-                .frame(minWidth: 420)
+                .frame(minWidth: 294)
         }
     }
 

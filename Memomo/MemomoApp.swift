@@ -3,6 +3,17 @@ import AppKit
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // 앱 아이콘 설정
+        // Swift Package Manager에서는 번들 리소스에서 직접 로드
+        // .process("Resources")로 인해 리소스는 번들 루트에 복사됨
+        if let iconURL = Bundle.module.url(forResource: "icon", withExtension: "png"),
+           let iconImage = NSImage(contentsOf: iconURL) {
+            NSApplication.shared.applicationIconImage = iconImage
+        } else if let iconURL = Bundle.main.url(forResource: "icon", withExtension: "png"),
+                  let iconImage = NSImage(contentsOf: iconURL) {
+            NSApplication.shared.applicationIconImage = iconImage
+        }
+        
         NSApplication.shared.setActivationPolicy(.regular)
         NSApplication.shared.activate(ignoringOtherApps: true)
     }

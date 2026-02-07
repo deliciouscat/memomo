@@ -127,3 +127,6 @@ Temporary Items
 *.tmp
 *.log
 *.cache
+
+# Built app bundle
+Memomo.app/

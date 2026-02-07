@@ -18,7 +18,10 @@ let package = Package(
             dependencies: [
                 .product(name: "MarkdownUI", package: "swift-markdown-ui")
             ],
-            path: "Memomo"
+            path: "Memomo",
+            resources: [
+                .process("Resources")
+            ]
         )
     ]
 )
