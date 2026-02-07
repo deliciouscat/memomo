@@ -4,6 +4,7 @@ struct DailyGaugeStackView: View {
     @EnvironmentObject private var activationMonitor: ActivationMonitor
 
     private let daysToShow = 7
+    @State private var hoveredDateKey: String?
 
     var body: some View {
         let data = recentStats()
@@ -20,6 +21,25 @@ struct DailyGaugeStackView: View {
                         .foregroundStyle(.secondary)
                 }
                 .frame(width: 14)
+                .contentShape(Rectangle())
+                .onHover { hovering in
+                    hoveredDateKey = hovering ? stat.dateKey : nil
+                }
+                .overlay(alignment: .top) {
+                    if hoveredDateKey == stat.dateKey {
+                        Text(formatDuration(TimeInterval(stat.totalSeconds)))
+                            .font(.caption2)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 3)
+                            .background(
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(Color(NSColor.windowBackgroundColor))
+                                    .shadow(radius: 2)
+                            )
+                            .fixedSize()
+                            .offset(y: -20)
+                    }
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -66,5 +86,13 @@ struct DailyGaugeStackView: View {
             return "\(parts[2])"
         }
         return dateKey
+    }
+
+    private func formatDuration(_ duration: TimeInterval) -> String {
+        let total = Int(duration)
+        let hours = total / 3600
+        let minutes = (total % 3600) / 60
+        let seconds = total % 60
+        return String(format: "%dh %dm %ds", hours, minutes, seconds)
     }
 }
