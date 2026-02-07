@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct ContentView: View {
     @EnvironmentObject private var appViewModel: AppViewModel
@@ -7,11 +8,13 @@ struct ContentView: View {
     var body: some View {
         VStack(spacing: 0) {
             MenuBarView()
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
+                .padding(.horizontal, 18)
+                .padding(.vertical, 12)
                 .background(Color(NSColor.windowBackgroundColor))
 
             Divider()
+
+            DailyGaugeStackView()
 
             Group {
                 switch appViewModel.currentSheet {
@@ -29,6 +32,7 @@ struct ContentView: View {
             SearchView()
         }
         .onAppear {
+            NSApp.activate(ignoringOtherApps: true)
             activationMonitor.startMonitoring(settings: appViewModel.activationSettings)
         }
         .onChange(of: appViewModel.activationSettings) { newValue in

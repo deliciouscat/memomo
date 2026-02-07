@@ -2,6 +2,8 @@ import SwiftUI
 
 struct TaskSheetView: View {
     @EnvironmentObject private var taskViewModel: TaskViewModel
+    @State private var pendingDeleteTaskId: UUID?
+    @State private var isDeleteAlertPresented = false
 
     var body: some View {
         HSplitView {
@@ -25,12 +27,26 @@ struct TaskSheetView: View {
                 }
                 .contextMenu {
                     Button("Delete") {
-                        taskViewModel.deleteTask(id: task.id)
+                        pendingDeleteTaskId = task.id
+                        isDeleteAlertPresented = true
                     }
                 }
             }
         }
         .listStyle(.sidebar)
+        .alert("Are You Sure?", isPresented: $isDeleteAlertPresented) {
+            Button("Delete", role: .destructive) {
+                if let taskId = pendingDeleteTaskId {
+                    taskViewModel.deleteTask(id: taskId)
+                }
+                pendingDeleteTaskId = nil
+            }
+            Button("Cancel", role: .cancel) {
+                pendingDeleteTaskId = nil
+            }
+        } message: {
+            Text("This action cannot be undone.")
+        }
     }
 
     private var taskDetail: some View {
@@ -48,13 +64,17 @@ struct TaskSheetView: View {
                         VStack(spacing: 8) {
                             ForEach($taskViewModel.tasks[taskIndex].subTasks) { $subTask in
                                 if !subTask.checkBox {
-                                    SubTaskDetailView(subTask: $subTask)
+                                    SubTaskDetailView(subTask: $subTask) {
+                                        removeSubTask(taskIndex: taskIndex, subTaskId: subTask.id)
+                                    }
                                 }
                             }
                         }
                     }
 
-                    CompletedDropdownView(subTasks: $taskViewModel.tasks[taskIndex].subTasks)
+                    CompletedDropdownView(subTasks: $taskViewModel.tasks[taskIndex].subTasks) { subTaskId in
+                        removeSubTask(taskIndex: taskIndex, subTaskId: subTaskId)
+                    }
 
                     HStack {
                         Button("Add SubTask") {
@@ -73,5 +93,10 @@ struct TaskSheetView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+    }
+
+    private func removeSubTask(taskIndex: Int, subTaskId: UUID) {
+        taskViewModel.tasks[taskIndex].subTasks.removeAll { $0.id == subTaskId }
+        taskViewModel.save()
     }
 }

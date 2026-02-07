@@ -2,6 +2,8 @@ import SwiftUI
 
 struct MemoSheetView: View {
     @EnvironmentObject private var memoViewModel: MemoViewModel
+    @State private var pendingDeleteMemoId: UUID?
+    @State private var isDeleteAlertPresented = false
 
     var body: some View {
         HSplitView {
@@ -22,12 +24,26 @@ struct MemoSheetView: View {
                     }
                     .contextMenu {
                         Button("Delete") {
-                            memoViewModel.deleteMemo(id: memo.id)
+                            pendingDeleteMemoId = memo.id
+                            isDeleteAlertPresented = true
                         }
                     }
             }
         }
         .listStyle(.sidebar)
+        .alert("Are You Sure?", isPresented: $isDeleteAlertPresented) {
+            Button("Delete", role: .destructive) {
+                if let memoId = pendingDeleteMemoId {
+                    memoViewModel.deleteMemo(id: memoId)
+                }
+                pendingDeleteMemoId = nil
+            }
+            Button("Cancel", role: .cancel) {
+                pendingDeleteMemoId = nil
+            }
+        } message: {
+            Text("This action cannot be undone.")
+        }
     }
 
     private var memoDetail: some View {

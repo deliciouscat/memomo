@@ -3,13 +3,16 @@ import SwiftUI
 struct CompletedDropdownView: View {
     @Binding var subTasks: [SubTask]
     @State private var isExpanded: Bool = false
+    let onDelete: (UUID) -> Void
 
     var body: some View {
         DisclosureGroup("Completed", isExpanded: $isExpanded) {
             VStack(spacing: 6) {
                 ForEach($subTasks) { $subTask in
                     if subTask.checkBox {
-                        SubTaskAbstractRow(subTask: $subTask)
+                        SubTaskAbstractRow(subTask: $subTask, onDelete: {
+                            onDelete(subTask.id)
+                        })
                     }
                 }
             }
@@ -21,6 +24,7 @@ struct CompletedDropdownView: View {
 
 private struct SubTaskAbstractRow: View {
     @Binding var subTask: SubTask
+    let onDelete: () -> Void
 
     var body: some View {
         HStack {
@@ -38,6 +42,11 @@ private struct SubTaskAbstractRow: View {
             Text(durationText())
                 .font(.caption)
                 .foregroundStyle(.secondary)
+            Button("X") {
+                onDelete()
+            }
+            .buttonStyle(.bordered)
+            .tint(Constants.deleteColor)
         }
         .padding(6)
         .background(Color(NSColor.controlBackgroundColor))

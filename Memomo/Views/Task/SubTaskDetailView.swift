@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SubTaskDetailView: View {
     @Binding var subTask: SubTask
+    let onDelete: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -16,6 +17,12 @@ struct SubTaskDetailView: View {
                         }
                     }
                 TextField("Subtask name", text: $subTask.name)
+                Spacer()
+                Button("X") {
+                    onDelete()
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Constants.deleteColor)
             }
 
             TextField("Description", text: $subTask.description, axis: .vertical)

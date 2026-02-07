@@ -47,6 +47,14 @@ final class DataManager {
         save(settings, to: Constants.settingsFileName)
     }
 
+    func loadDailyGaugeStats() -> [DailyGaugeStat] {
+        load([DailyGaugeStat].self, from: Constants.dailyGaugeFileName) ?? []
+    }
+
+    func saveDailyGaugeStats(_ stats: [DailyGaugeStat]) {
+        save(stats, to: Constants.dailyGaugeFileName)
+    }
+
     private func load<T: Decodable>(_ type: T.Type, from fileName: String) -> T? {
         ensureDataDirectory()
         let url = baseURL.appendingPathComponent(fileName)

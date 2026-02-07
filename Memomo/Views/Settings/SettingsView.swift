@@ -1,13 +1,22 @@
 import SwiftUI
+import AppKit
 
 struct SettingsView: View {
     @EnvironmentObject private var appViewModel: AppViewModel
+    @Environment(\.dismiss) private var dismiss
     @State private var newBundleId: String = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Activation Settings")
-                .font(.headline)
+            HStack {
+                Text("Activation Settings")
+                    .font(.headline)
+                Spacer()
+                Button("Close") {
+                    dismiss()
+                }
+                .buttonStyle(.bordered)
+            }
 
             HStack {
                 Text("Max Gauge")
@@ -32,11 +41,11 @@ struct SettingsView: View {
 
             Divider()
 
-            Text("WorkAppList (Bundle IDs)")
+            Text("WorkAppList")
                 .font(.headline)
 
             HStack {
-                TextField("com.apple.dt.Xcode", text: $newBundleId)
+                TextField("Bundle ID (optional)", text: $newBundleId)
                 Button("Add") {
                     let trimmed = newBundleId.trimmingCharacters(in: .whitespacesAndNewlines)
                     guard !trimmed.isEmpty else { return }
@@ -47,10 +56,20 @@ struct SettingsView: View {
                 }
             }
 
+            Button("Choose App…") {
+                chooseApp()
+            }
+            .buttonStyle(.bordered)
+
             List {
                 ForEach(appViewModel.activationSettings.workAppList, id: \.self) { bundleId in
                     HStack {
-                        Text(bundleId)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(appName(for: bundleId))
+                            Text(bundleId)
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
                         Spacer()
                         Button("Remove") {
                             appViewModel.activationSettings.workAppList.removeAll { $0 == bundleId }
@@ -65,5 +84,29 @@ struct SettingsView: View {
         }
         .padding(20)
         .frame(width: 480, height: 520)
+    }
+
+    private func chooseApp() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.application]
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+        panel.title = "Choose App"
+        if panel.runModal() == .OK, let url = panel.url {
+            if let bundle = Bundle(url: url), let bundleId = bundle.bundleIdentifier {
+                if !appViewModel.activationSettings.workAppList.contains(bundleId) {
+                    appViewModel.activationSettings.workAppList.append(bundleId)
+                }
+            }
+        }
+    }
+
+    private func appName(for bundleId: String) -> String {
+        if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleId) {
+            let name = url.deletingPathExtension().lastPathComponent
+            return name.isEmpty ? bundleId : name
+        }
+        return bundleId
     }
 }

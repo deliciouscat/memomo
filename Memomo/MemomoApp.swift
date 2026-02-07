@@ -1,7 +1,16 @@
 import SwiftUI
+import AppKit
+
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        NSApplication.shared.setActivationPolicy(.regular)
+        NSApplication.shared.activate(ignoringOtherApps: true)
+    }
+}
 
 @main
 struct MemomoApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var appViewModel = AppViewModel()
     @StateObject private var taskViewModel = TaskViewModel()
     @StateObject private var memoViewModel = MemoViewModel()
